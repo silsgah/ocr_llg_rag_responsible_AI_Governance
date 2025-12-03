@@ -28,11 +28,14 @@ app = FastAPI(
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.cors_origins,
+    allow_origins=settings.cors_origins_list,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Log CORS configuration for debugging
+logger.info(f"🌐 CORS enabled for origins: {settings.cors_origins_list}")
 
 # Include routers
 app.include_router(health.router)

@@ -57,11 +57,7 @@ class Settings(BaseSettings):
     # API Configuration
     api_host: str = "0.0.0.0"
     api_port: int = int(os.getenv("PORT", "8000"))  # Use PORT from Render or default to 8000
-    cors_origins: list = [
-        "http://localhost:3000",  # Local development
-        "http://localhost:8080",  # Local development (alt port)
-        "https://adamani-ai-rag-frontend.onrender.com",  # Production frontend
-    ]
+    cors_origins: str = "http://localhost:3000,http://localhost:8080,https://adamani-ai-rag-frontend.onrender.com"
 
     # Storage
     upload_dir: str = "./data/uploads"
@@ -86,6 +82,13 @@ class Settings(BaseSettings):
             self.database_url = self.database_url.replace("postgres://", "postgresql+asyncpg://", 1)
         elif self.database_url.startswith("postgresql://") and "asyncpg" not in self.database_url:
             self.database_url = self.database_url.replace("postgresql://", "postgresql+asyncpg://", 1)
+
+    @property
+    def cors_origins_list(self) -> list[str]:
+        """Parse CORS origins from comma-separated string."""
+        if isinstance(self.cors_origins, list):
+            return self.cors_origins
+        return [origin.strip() for origin in self.cors_origins.split(",") if origin.strip()]
 
 
 @lru_cache()
