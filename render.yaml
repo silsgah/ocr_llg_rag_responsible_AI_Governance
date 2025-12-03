@@ -65,8 +65,7 @@ services:
       # API Configuration
       - key: API_HOST
         value: 0.0.0.0
-      - key: API_PORT
-        value: 8000
+      # PORT is automatically provided by Render - no need to set API_PORT
 
       # Storage Paths
       - key: UPLOAD_DIR

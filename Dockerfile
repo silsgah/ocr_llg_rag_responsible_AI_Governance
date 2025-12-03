@@ -34,4 +34,5 @@ EXPOSE 8000
 RUN mkdir -p /app/data/uploads /app/data/processed /app/data/vectorstore
 
 # Run the FastAPI app with Uvicorn
-CMD ["uvicorn", "src.adamani_ai_rag.api.app:app", "--host", "0.0.0.0", "--port", "8000"]
+# Use PORT environment variable from Render, default to 8000 for local development
+CMD uvicorn src.adamani_ai_rag.api.app:app --host 0.0.0.0 --port ${PORT:-8000}
