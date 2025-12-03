@@ -1,43 +1,46 @@
-[project]
+[tool.poetry]
 name = "adamani-ai-rag"
 version = "0.1.0"
 description = "LLG OCR for businesses"
 readme = "README.md"
-requires-python = ">=3.10,<4.0"
-packages = [
-    { include = "src/adamani_ai_rag" }
-]
-dependencies = [
-    "fastapi>=0.115.0,<0.116.0",
-    "uvicorn[standard]>=0.32.0,<0.33.0",
-    "langchain>=0.3.0,<0.4.0",
-    "langchain-core>=0.3.0,<0.4.0",
-    "langchain-community>=0.3.0,<0.4.0",
-    "langchain-huggingface>=0.1.0,<0.2.0",
-    "langchain-ollama>=0.2.0,<0.3.0",
-    "langchain-openai>=0.2.0,<0.3.0",
-    "langchain-anthropic>=0.2.0,<0.3.0",
-    "langchain-chroma>=0.2.0,<0.3.0",
-    "python-dotenv>=1.0.0,<2.0.0",
-    "pydantic>=2.9.0,<3.0.0",
-    "pydantic-settings>=2.6.0,<3.0.0",
-    "chromadb>=0.5.0,<0.6.0",
-    "faiss-cpu>=1.9.0,<2.0.0",
-    "sentence-transformers>=3.3.0,<4.0.0",
-    "python-multipart>=0.0.6",
-    "ollama>=0.4.0,<0.5.0",
-    "loguru>=0.7.0,<0.8.0",
-    "pytesseract>=0.3.0,<0.4.0",
-    "pillow>=11.0.0,<12.0.0",
-    "pypdf>=5.1.0,<6.0.0",
-    "pdf2image>=1.17.0,<2.0.0",
-    "numpy>=1.26.0,<2.0.0",
-    "aiofiles>=24.1.0,<25.0.0",
-    "fastapi-users[sqlalchemy]>=12.0.0,<13.0.0",
-    "asyncpg>=0.29.0,<0.30.0",
-    "alembic>=1.13.0,<2.0.0",
-    "python-jose[cryptography]>=3.3.0,<4.0.0",
-    "passlib[bcrypt]>=1.7.4,<2.0.0",
-    "sqlalchemy[asyncio]>=2.0.0,<3.0.0",
-    "email-validator>=2.1.0,<3.0.0",
-]
+authors = ["Your Name <your.email@example.com>"]
+packages = [{include = "adamani_ai_rag", from = "src"}]
+
+[tool.poetry.dependencies]
+python = ">=3.10,<4.0"
+fastapi = ">=0.115.0,<0.116.0"
+uvicorn = {extras = ["standard"], version = ">=0.32.0,<0.33.0"}
+langchain = ">=0.3.0,<0.4.0"
+langchain-core = ">=0.3.0,<0.4.0"
+langchain-community = ">=0.3.0,<0.4.0"
+langchain-huggingface = ">=0.1.0,<0.2.0"
+langchain-ollama = ">=0.2.0,<0.3.0"
+langchain-openai = ">=0.2.0,<0.3.0"
+langchain-anthropic = ">=0.2.0,<0.3.0"
+langchain-chroma = ">=0.2.0,<0.3.0"
+python-dotenv = ">=1.0.0,<2.0.0"
+pydantic = ">=2.9.0,<3.0.0"
+pydantic-settings = ">=2.6.0,<3.0.0"
+chromadb = ">=0.5.0,<0.6.0"
+faiss-cpu = ">=1.9.0,<2.0.0"
+sentence-transformers = ">=3.3.0,<4.0.0"
+python-multipart = ">=0.0.6"
+ollama = ">=0.4.0,<0.5.0"
+loguru = ">=0.7.0,<0.8.0"
+pytesseract = ">=0.3.0,<0.4.0"
+pillow = ">=11.0.0,<12.0.0"
+pypdf = ">=5.1.0,<6.0.0"
+pdf2image = ">=1.17.0,<2.0.0"
+numpy = ">=1.26.0,<2.0.0"
+aiofiles = ">=24.1.0,<25.0.0"
+fastapi-users = {extras = ["sqlalchemy"], version = ">=12.0.0,<13.0.0"}
+asyncpg = ">=0.29.0,<0.30.0"
+alembic = ">=1.13.0,<2.0.0"
+python-jose = {extras = ["cryptography"], version = ">=3.3.0,<4.0.0"}
+passlib = {extras = ["bcrypt"], version = ">=1.7.4,<2.0.0"}
+sqlalchemy = {extras = ["asyncio"], version = ">=2.0.0,<3.0.0"}
+email-validator = ">=2.1.0,<3.0.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
