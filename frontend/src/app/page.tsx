@@ -1,15 +1,19 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { FileText, MessageSquare, CheckCircle2, XCircle } from 'lucide-react';
+import { FileText, MessageSquare, CheckCircle2, XCircle, LogOut, User as UserIcon } from 'lucide-react';
 import { FileUploader } from '@/components/FileUploader';
 import { ChatInterface } from '@/components/ChatInterface';
+import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { healthCheck } from '@/lib/api';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function Home() {
+  const { user, logout } = useAuth();
   const [sessionId] = useState(() => `user_${Date.now()}`);
   const [activeTab, setActiveTab] = useState<'upload' | 'chat'>('upload');
   const [backendStatus, setBackendStatus] = useState<'checking' | 'online' | 'offline'>('checking');
+  const [showUserMenu, setShowUserMenu] = useState(false);
 
   useEffect(() => {
     const checkBackend = async () => {
@@ -28,47 +32,83 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="bg-blue-600 rounded-lg p-2">
-                <FileText className="w-6 h-6 text-white" />
+    <ProtectedRoute>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50">
+        {/* Header */}
+        <header className="bg-white shadow-sm">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className="bg-blue-600 rounded-lg p-2">
+                  <FileText className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h1 className="text-2xl font-bold text-gray-900">
+                    Adamani AI RAG
+                  </h1>
+                  <p className="text-sm text-gray-600">
+                    Invoice & PDF Processing
+                  </p>
+                </div>
               </div>
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">
-                  Adamani AI RAG
-                </h1>
-                <p className="text-sm text-gray-600">
-                  Invoice & PDF Processing
-                </p>
-              </div>
-            </div>
 
-            {/* Backend Status */}
-            <div className="flex items-center space-x-2">
-              {backendStatus === 'online' ? (
-                <>
-                  <CheckCircle2 className="w-5 h-5 text-green-500" />
-                  <span className="text-sm text-gray-600">Backend Online</span>
-                </>
-              ) : backendStatus === 'offline' ? (
-                <>
-                  <XCircle className="w-5 h-5 text-red-500" />
-                  <span className="text-sm text-gray-600">Backend Offline</span>
-                </>
-              ) : (
-                <>
-                  <div className="w-5 h-5 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin" />
-                  <span className="text-sm text-gray-600">Checking...</span>
-                </>
-              )}
+              <div className="flex items-center space-x-4">
+                {/* Backend Status */}
+                <div className="flex items-center space-x-2">
+                  {backendStatus === 'online' ? (
+                    <>
+                      <CheckCircle2 className="w-5 h-5 text-green-500" />
+                      <span className="text-sm text-gray-600">Online</span>
+                    </>
+                  ) : backendStatus === 'offline' ? (
+                    <>
+                      <XCircle className="w-5 h-5 text-red-500" />
+                      <span className="text-sm text-gray-600">Offline</span>
+                    </>
+                  ) : (
+                    <>
+                      <div className="w-5 h-5 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin" />
+                      <span className="text-sm text-gray-600">Checking...</span>
+                    </>
+                  )}
+                </div>
+
+                {/* User Menu */}
+                <div className="relative">
+                  <button
+                    onClick={() => setShowUserMenu(!showUserMenu)}
+                    className="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors"
+                  >
+                    <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                      <UserIcon className="w-5 h-5 text-white" />
+                    </div>
+                    <div className="text-left hidden md:block">
+                      <p className="text-sm font-medium text-gray-900">
+                        {user?.full_name || 'User'}
+                      </p>
+                      <p className="text-xs text-gray-500">{user?.email}</p>
+                    </div>
+                  </button>
+
+                  {showUserMenu && (
+                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-10">
+                      <button
+                        onClick={() => {
+                          logout();
+                          setShowUserMenu(false);
+                        }}
+                        className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2"
+                      >
+                        <LogOut className="w-4 h-4" />
+                        <span>Logout</span>
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </header>
+        </header>
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -151,5 +191,6 @@ export default function Home() {
         </footer>
       </main>
     </div>
+    </ProtectedRoute>
   );
 }

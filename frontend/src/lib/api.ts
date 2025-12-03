@@ -19,6 +19,22 @@ class APIError extends Error {
   }
 }
 
+// Get auth token from localStorage
+function getAuthToken(): string | null {
+  if (typeof window === 'undefined') return null;
+  return localStorage.getItem('auth_token');
+}
+
+// Get auth headers
+function getAuthHeaders(): HeadersInit {
+  const token = getAuthToken();
+  const headers: HeadersInit = {};
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+  return headers;
+}
+
 async function handleResponse<T>(response: Response): Promise<T> {
   if (!response.ok) {
     const error = await response.json().catch(() => ({ detail: response.statusText }));
@@ -42,6 +58,7 @@ export async function uploadDocument(
     `${API_BASE}/documents/upload?use_ocr=${useOCR}`,
     {
       method: 'POST',
+      headers: getAuthHeaders(),
       body: formData,
     }
   );
@@ -56,6 +73,7 @@ export async function sendChatMessage(
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      ...getAuthHeaders(),
     },
     body: JSON.stringify(request),
   });
@@ -71,6 +89,7 @@ export async function addTexts(
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      ...getAuthHeaders(),
     },
     body: JSON.stringify({ texts, metadatas }),
   });
@@ -81,6 +100,7 @@ export async function addTexts(
 export async function clearMemory(sessionId: string): Promise<void> {
   const response = await fetch(`${API_BASE}/chat/memory/${sessionId}`, {
     method: 'DELETE',
+    headers: getAuthHeaders(),
   });
 
   await handleResponse(response);
@@ -89,6 +109,7 @@ export async function clearMemory(sessionId: string): Promise<void> {
 export async function clearKnowledgeBase(): Promise<void> {
   const response = await fetch(`${API_BASE}/documents/clear`, {
     method: 'DELETE',
+    headers: getAuthHeaders(),
   });
 
   await handleResponse(response);
