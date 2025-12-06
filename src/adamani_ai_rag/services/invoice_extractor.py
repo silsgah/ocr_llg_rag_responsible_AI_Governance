@@ -81,7 +81,8 @@ class InvoiceExtractor:
     async def save_to_db(self, db: AsyncSession, invoice_data: InvoiceData, file_path: str) -> Invoice:
         """Save extracted invoice to database."""
         from datetime import datetime
-
+        logger.info(f"💾 Saving invoice {invoice_data.vendor_name} to DB")
+        logger.info(f"🔍 Preparing to save invoice: {invoice_data.invoice_number}")
         invoice = Invoice(
             vendor_name=invoice_data.vendor_name,
             vendor_address=invoice_data.vendor_address,
@@ -95,6 +96,9 @@ class InvoiceExtractor:
             file_path=file_path
         )
         db.add(invoice)
+        logger.info("🔍 About to commit")
+        await db.commit()  
+        logger.info("✅ Invoice COMMITTED to DB!")
         await db.flush()
         logger.info(f"💾 Saved invoice {invoice.id} to DB")
         return invoice

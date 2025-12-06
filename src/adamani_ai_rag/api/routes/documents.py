@@ -47,31 +47,6 @@ async def add_texts(
         logger.error(f"Add texts error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
-
-# def process_file_background(file_path: str, filename: str, use_ocr: bool, doc_service: DocumentService, upload_id: str):
-#     """Background task to process file."""
-#     try:
-#         logger.info(f"🔄 Processing {filename} in background...")
-#         chunks = doc_service.process_file(file_path, use_ocr=use_ocr)
-        
-#         # Store result for retrieval
-#         _upload_results[upload_id] = {
-#             "status": "success",
-#             "documents_added": 1,
-#             "chunks_created": chunks,
-#             "message": f"Successfully processed {filename}"
-#         }
-#         logger.success(f"✅ Background processing complete: {chunks} chunks created from {filename}")
-        
-#     except Exception as e:
-#         logger.error(f"❌ Background processing error: {str(e)}")
-#         _upload_results[upload_id] = {
-#             "status": "error",
-#             "message": str(e)[:200]
-#         }
-
-
-
 def process_file_background(file_path: str, filename: str, use_ocr: bool, doc_service: DocumentService, upload_id: str):
     """Background task to process file."""
     try:
@@ -89,7 +64,7 @@ def process_file_background(file_path: str, filename: str, use_ocr: bool, doc_se
         _upload_results[upload_id] = {
             "status": "success",
             "documents_added": 1,
-            "chunks_created": chunks,  # ✅ Now an INTEGER
+            "chunks_created": chunks,
             "message": f"Successfully processed {filename}",
             "timestamp": time()
         }
@@ -195,43 +170,6 @@ async def get_upload_status(upload_id: str):
     
     result_data = _upload_results[upload_id]
     return JSONResponse(status_code=200, content=result_data)
-
-# @router.get("/status/{upload_id}")
-# async def get_upload_status(upload_id: str):
-#     """Check status of a background upload/processing task."""
-#     if upload_id not in _upload_results:
-#         return JSONResponse(
-#             status_code=404,
-#             content={
-#                 "status": "not_found",
-#                 "message": "Upload ID not found"
-#             }
-#         )
-    
-#     result_data = _upload_results[upload_id]
-    
-#     if result_data["status"] == "success":
-#         # Return results and clean up
-#         response = result_data.copy()
-#         # del _upload_results[upload_id]
-#         return JSONResponse(status_code=200, content=response)
-        
-#     elif result_data["status"] == "error":
-#         # Return error and clean up
-#         response = result_data.copy()
-#         # del _upload_results[upload_id]
-#         return JSONResponse(status_code=500, content=response)
-        
-#     else:
-#         # Still processing
-#         return JSONResponse(
-#             status_code=200,
-#             content={
-#                 "status": "processing",
-#                 "message": "File is still being processed..."
-#             }
-#         )
-
 
 @router.post("/process-directory", response_model=DocumentResponse)
 async def process_directory(

@@ -106,16 +106,6 @@ async def get_document_service(
         vectorstore=get_vectorstore_manager(),
         ocr_processor=get_ocr_processor(),
         pdf_processor=get_pdf_processor(),
-        llm_client=get_llm_client(),  # ✅ Added
-        db=db,                        # ✅ Added
+        llm_client=get_llm_client(),  
+        db=db,
     )
-# def get_document_service() -> DocumentService:
-#     """Get document service singleton."""
-#     global _document_service
-#     if _document_service is None:
-#         settings = get_settings()
-#         vectorstore = get_vectorstore_manager()
-#         ocr_processor = get_ocr_processor()
-#         pdf_processor = get_pdf_processor()
-#         _document_service = DocumentService(settings, vectorstore, ocr_processor, pdf_processor)
-#     return _document_service
