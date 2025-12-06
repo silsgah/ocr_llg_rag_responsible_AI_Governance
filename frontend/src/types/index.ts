@@ -58,3 +58,14 @@ export interface HealthResponse {
     ocr: string;
   };
 }
+
+export interface Invoice {
+  id: string;
+  vendor_name: string;
+  invoice_number: string;
+  total_amount: number;
+  currency: string;
+  invoice_date: string;
+  due_date: string | null;
+  status: 'paid' | 'unpaid';
+}
