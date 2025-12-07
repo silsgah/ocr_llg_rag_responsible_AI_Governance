@@ -5,6 +5,7 @@ from pathlib import Path
 from langchain_core.documents import Document
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from sqlalchemy.ext.asyncio import AsyncSession
+import uuid
 
 from ..core.llm import LLMClient
 from ..core.vectorstore import VectorStoreManager
