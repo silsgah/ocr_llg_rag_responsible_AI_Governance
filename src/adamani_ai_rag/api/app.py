@@ -7,7 +7,7 @@ from ..config import get_settings
 from ..utils.logger import setup_logger, get_logger
 from ..database.base import Base
 from ..database.models import User, Organization, OrganizationMember, Document
-from .routes import health, chat, documents, auth
+from .routes import health, chat, documents, auth, invoices
 
 # Setup logging
 settings = get_settings()
@@ -47,6 +47,7 @@ app.include_router(health.router)
 app.include_router(auth.router)  # Authentication routes
 app.include_router(chat.router)
 app.include_router(documents.router)
+app.include_router(invoices.router, prefix="/api")  # ← Add this line
 
 
 @app.on_event("startup")
