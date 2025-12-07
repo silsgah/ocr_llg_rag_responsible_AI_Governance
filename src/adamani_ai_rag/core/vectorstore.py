@@ -21,9 +21,13 @@ class VectorStoreManager:
             settings: Application settings
             embedding_manager: Embedding manager instance
         """
+        # self.settings = settings
+        # self.embedding_manager = embedding_manager
+        # self._store: Optional[Union[FAISS, Chroma]] = None
         self.settings = settings
         self.embedding_manager = embedding_manager
         self._store: Optional[Union[FAISS, Chroma]] = None
+        self._chroma_needs_reload = True  # ✅ Track staleness
 
     # def get_store(self) -> Union[FAISS, Chroma]:
     #     """
@@ -42,25 +46,47 @@ class VectorStoreManager:
     #             self._store = self._init_faiss(embeddings)
 
     #     return self._store
+    # def get_store(self) -> Union[FAISS, Chroma]:
+    #     """Get FRESH vector store instance every time (no caching for Chroma)."""
+    #     logger.info(f"🗄️ Initializing {self.settings.vector_store_type.upper()} vector store...")
+    #     embeddings = self.embedding_manager.get_embeddings()
+
+    #     if self.settings.vector_store_type.lower() == "chroma":
+    #         # ✅ ALWAYS load fresh from disk (no caching)
+    #         return self._init_chroma(embeddings)
+    #     else:
+    #         # FAISS: keep caching (since it's in-memory only)
+    #         if self._store is None:
+    #             self._store = self._init_faiss(embeddings)
+    #         return self._store
     def get_store(self) -> Union[FAISS, Chroma]:
-        """Get FRESH vector store instance every time (no caching for Chroma)."""
-        logger.info(f"🗄️ Initializing {self.settings.vector_store_type.upper()} vector store...")
+        """Get or create vector store instance with smart caching."""
         embeddings = self.embedding_manager.get_embeddings()
 
         if self.settings.vector_store_type.lower() == "chroma":
-            # ✅ ALWAYS load fresh from disk (no caching)
-            return self._init_chroma(embeddings)
+            # ✅ Only reload if marked stale OR never loaded
+            if self._store is None or self._chroma_needs_reload:
+                logger.info("🔄 Loading ChromaDB from disk...")
+                self._store = self._init_chroma(embeddings)
+                self._chroma_needs_reload = False  # Mark as fresh
+            return self._store
         else:
-            # FAISS: keep caching (since it's in-memory only)
+            # FAISS: keep existing logic
             if self._store is None:
                 self._store = self._init_faiss(embeddings)
             return self._store
 
+    # def refresh_store(self):
+    #     """Reload store from disk (for Chroma only)."""
+    #     if self.settings.vector_store_type.lower() == "chroma":
+    #         self._store = None  # Force reload on next get_store()      
+    
     def refresh_store(self):
-        """Reload store from disk (for Chroma only)."""
+        """Force reload on next access."""
         if self.settings.vector_store_type.lower() == "chroma":
-            self._store = None  # Force reload on next get_store()      
-     
+            self._chroma_needs_reload = True
+            logger.debug("🔄 ChromaDB marked for reload")
+
     def _init_chroma(self, embeddings) -> Chroma:
         """Initialize ChromaDB vector store."""
         persist_directory = self.settings.vectordb_path
@@ -125,22 +151,37 @@ class VectorStoreManager:
         logger.success("✅ New FAISS vector store created")
         return store
 
-    def add_documents(self, documents: List[Document]) -> None:
-        """
-        Add documents to vector store.
+    # def add_documents(self, documents: List[Document]) -> None:
+    #     """
+    #     Add documents to vector store.
 
-        Args:
-            documents: List of documents to add
-        """
+    #     Args:
+    #         documents: List of documents to add
+    #     """
+    #     store = self.get_store()
+    #     logger.info(f"📄 Adding {len(documents)} documents to vector store")
+    #     store.add_documents(documents)
+    #     self.refresh_store()  # ✅ Invalidate cache
+
+    #     # Auto-persist for ChromaDB
+    #     if isinstance(store, Chroma):
+    #         store.persist()
+    #         logger.debug("💾 ChromaDB persisted")
+
+    #     logger.success(f"✅ Added {len(documents)} documents")
+    
+    def add_documents(self, documents: List[Document]) -> None:
+        """Add documents to vector store."""
         store = self.get_store()
         logger.info(f"📄 Adding {len(documents)} documents to vector store")
         store.add_documents(documents)
-        self.refresh_store()  # ✅ Invalidate cache
 
-        # Auto-persist for ChromaDB
+        # Persist and mark for reload
         if isinstance(store, Chroma):
             store.persist()
             logger.debug("💾 ChromaDB persisted")
+            self._chroma_needs_reload = True  # ✅ Mark stale
+            logger.debug("🔄 Cache invalidated - next query will reload")
 
         logger.success(f"✅ Added {len(documents)} documents")
 
