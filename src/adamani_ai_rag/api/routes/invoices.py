@@ -1,5 +1,6 @@
 from datetime import datetime, timezone 
 
+from fastapi import APIRouter, Depends, HTTPException, status, Query
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
@@ -18,6 +19,11 @@ async def get_user_invoices(
     limit: int = Query(10, ge=1, le=100)
 ):
     """Get invoices for current user."""
+    if not user or not user.is_active:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated"
+        )
     query = (
         select(Invoice)
         .where(Invoice.user_id == user.id)
