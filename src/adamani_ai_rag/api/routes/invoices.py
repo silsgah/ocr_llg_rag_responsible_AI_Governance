@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone 
 
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -37,7 +37,7 @@ async def get_user_invoices(
             "currency": inv.currency,
             "invoice_date": inv.invoice_date.isoformat(),
             "due_date": inv.due_date.isoformat() if inv.due_date else None,
-            "status": "paid" if inv.due_date and inv.due_date < datetime.utcnow() else "unpaid"
+            "status": "paid" if inv.due_date and inv.due_date < datetime.now(timezone.utc) else "unpaid"
         }
         for inv in invoices
     ]
