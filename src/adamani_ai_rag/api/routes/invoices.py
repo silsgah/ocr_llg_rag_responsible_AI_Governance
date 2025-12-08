@@ -61,9 +61,9 @@ settings = get_settings()
 setup_logger(settings.log_level)
 logger = get_logger()
 
-router = APIRouter(prefix="/invoices", tags=["invoices"])
+router = APIRouter(tags=["invoices"])
 
-@router.get("/")
+@router.get("/invoices")
 async def get_user_invoices(
     request: Request,
     db: AsyncSession = Depends(get_db),
