@@ -129,7 +129,6 @@ export default function Home() {
                   setActiveTab('chat');
                 }}
               />
-               <InvoiceDashboard />
               <div className="mt-6 p-4 bg-blue-50 rounded-lg">
                 <h3 className="text-sm font-semibold text-blue-900 mb-2">
                   Supported Documents
@@ -176,6 +175,11 @@ export default function Home() {
                   </button>
                 ))}
               </div>
+            </div>
+
+            {/* Invoice Dashboard */}
+            <div className="mt-6 bg-white rounded-lg shadow-lg p-6">
+              <InvoiceDashboard />
             </div>
           </div>
         </div>

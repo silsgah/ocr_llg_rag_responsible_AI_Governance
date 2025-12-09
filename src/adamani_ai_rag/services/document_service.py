@@ -87,9 +87,10 @@ class DocumentService:
 
             # Get full text for invoice detection
             full_text = "\n\n".join([doc.page_content for doc in documents])
-
+            logger.info(f"📄 Full text preview: {full_text[:80]}...")
             # === INVOICE EXTRACTION ===
             if self._is_invoice(full_text):
+                logger.info("✅ File detected as invoice")
                 logger.info(f"Processing invoice now to databas")
                 try:
                     invoice_data = self.invoice_extractor.extract(full_text)
