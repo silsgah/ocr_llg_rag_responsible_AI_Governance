@@ -150,7 +150,7 @@ export default function Home() {
             </div>
 
             {/* Quick Questions */}
-            <div className="mt-4 p-4 bg-white rounded-lg shadow">
+            {/* <div className="mt-4 p-4 bg-white rounded-lg shadow">
               <h3 className="text-sm font-semibold text-gray-900 mb-3">
                 💡 Example Questions
               </h3>
@@ -175,7 +175,7 @@ export default function Home() {
                   </button>
                 ))}
               </div>
-            </div>
+            </div> */}
 
             {/* Invoice Dashboard */}
             <div className="mt-6 bg-white rounded-lg shadow-lg p-6">
